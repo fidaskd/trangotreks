@@ -2,109 +2,165 @@
 import BaseHead from '../../components/BaseHead.astro';
 import Header from '../../components/Header.astro';
 import Footer from '../../components/Footer.astro';
-import { SITE_TITLE, SITE_DESCRIPTION } from '../../consts';
-import { getCollection } from 'astro:content';
 import FormattedDate from '../../components/FormattedDate.astro';
+import { SITE_TITLE } from '../../consts';
+import { getCollection } from 'astro:content';
 
 const posts = (await getCollection('blog')).sort(
 	(a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
 );
+const [featured, ...rest] = posts;
 ---
 
 <!doctype html>
 <html lang="en">
 	<head>
-		<BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
+		<BaseHead
+			title={`Journal · ${SITE_TITLE}`}
+			description="Trip reports, route notes and stories from the Karakoram."
+		/>
 		<style>
-			main {
-				width: 960px;
+			.intro {
+				padding-block: clamp(3rem, 7vw, 5rem) clamp(2rem, 4vw, 3rem);
 			}
-			ul {
-				display: flex;
-				flex-wrap: wrap;
-				gap: 2rem;
-				list-style-type: none;
-				margin: 0;
-				padding: 0;
-			}
-			ul li {
-				width: calc(50% - 1rem);
-			}
-			ul li * {
-				text-decoration: none;
-				transition: 0.2s ease;
-			}
-			ul li:first-child {
-				width: 100%;
-				margin-bottom: 1rem;
-				text-align: center;
-			}
-			ul li:first-child img {
-				width: 100%;
-			}
-			ul li:first-child .title {
-				font-size: 2.369rem;
-			}
-			ul li img {
+			.intro h1 {
 				margin-bottom: 0.5rem;
-				border-radius: 12px;
 			}
-			ul li a {
-				display: block;
+			.featured {
+				display: grid;
+				grid-template-columns: 1.4fr 1fr;
+				gap: clamp(1.5rem, 4vw, 3.5rem);
+				align-items: center;
+				margin-bottom: clamp(3rem, 6vw, 4.5rem);
+				color: inherit;
+				text-decoration: none;
 			}
-			.title {
-				margin: 0;
-				color: rgb(var(--black));
-				line-height: 1;
+			.featured img,
+			.grid img {
+				width: 100%;
+				object-fit: cover;
+				border-radius: var(--radius-lg);
+				transition:
+					transform 0.3s ease,
+					box-shadow 0.3s ease;
+			}
+			.featured img {
+				aspect-ratio: 16 / 10;
+			}
+			.featured h2 {
+				font-weight: 500;
+			}
+			.featured p {
+				color: var(--slate);
 			}
 			.date {
+				margin-bottom: 0.5rem;
+				font-size: 0.8rem;
+				font-weight: 600;
+				letter-spacing: 0.1em;
+				text-transform: uppercase;
+				color: var(--accent-dark);
+			}
+			.more {
+				font-weight: 600;
+				color: var(--accent-dark);
+			}
+			.grid {
+				display: grid;
+				grid-template-columns: repeat(3, 1fr);
+				gap: 2.5rem 1.75rem;
+				padding: 0;
+				margin: 0 0 clamp(4rem, 9vw, 6rem);
+				list-style: none;
+				border-top: 1px solid var(--line);
+				padding-top: clamp(2.5rem, 5vw, 3.5rem);
+			}
+			.grid a {
+				display: block;
+				color: inherit;
+				text-decoration: none;
+			}
+			.grid img {
+				aspect-ratio: 3 / 2;
+				margin-bottom: 1rem;
+				border-radius: var(--radius);
+			}
+			.grid h3 {
+				margin-bottom: 0.35rem;
+				transition: color 0.2s ease;
+			}
+			.grid p.desc {
 				margin: 0;
-				color: rgb(var(--gray));
+				color: var(--slate);
 			}
-			ul li a:hover h4,
-			ul li a:hover .date {
-				color: rgb(var(--accent));
+			a:hover img {
+				transform: translateY(-3px);
+				box-shadow: var(--shadow-lg);
 			}
-			ul a:hover img {
-				box-shadow: var(--box-shadow);
+			a:hover h2,
+			a:hover h3 {
+				color: var(--accent-dark);
 			}
-			@media (max-width: 720px) {
-				ul {
-					gap: 0.5em;
+			@media (max-width: 860px) {
+				.featured {
+					grid-template-columns: 1fr;
 				}
-				ul li {
-					width: 100%;
-					text-align: center;
+				.grid {
+					grid-template-columns: 1fr 1fr;
 				}
-				ul li:first-child {
-					margin-bottom: 0;
-				}
-				ul li:first-child .title {
-					font-size: 1.563em;
+			}
+			@media (max-width: 560px) {
+				.grid {
+					grid-template-columns: 1fr;
 				}
 			}
 		</style>
 	</head>
 	<body>
 		<Header />
-		<main>
-			<section>
-				<ul>
-					{
-						posts.map((post) => (
-							<li>
-								<a href={`/blog/${post.id}/`}>
-									<img width={720} height={360} src={post.data.heroImage} alt="" />
-									<h4 class="title">{post.data.title}</h4>
-									<p class="date">
-										<FormattedDate date={post.data.pubDate} />
-									</p>
-								</a>
-							</li>
-						))
-					}
-				</ul>
-			</section>
+		<main class="container">
+			<header class="intro">
+				<p class="eyebrow">The journal</p>
+				<h1>Stories from the trail</h1>
+				<p class="lede">Trip reports, route notes and field dispatches from the Karakoram.</p>
+			</header>
+
+			{
+				featured && (
+					<a class="featured" href={`/blog/${featured.id}/`}>
+						{featured.data.heroImage && (
+							<img width={880} height={550} src={featured.data.heroImage} alt="" />
+						)}
+						<div>
+							<p class="date">
+								<FormattedDate date={featured.data.pubDate} />
+							</p>
+							<h2>{featured.data.title}</h2>
+							<p>{featured.data.description}</p>
+							<span class="more">Read the story →</span>
+						</div>
+					</a>
+				)
+			}
+
+			<ul class="grid">
+				{
+					rest.map((post) => (
+						<li>
+							<a href={`/blog/${post.id}/`}>
+								{post.data.heroImage && (
+									<img width={720} height={480} src={post.data.heroImage} alt="" loading="lazy" />
+								)}
+								<p class="date">
+									<FormattedDate date={post.data.pubDate} />
+								</p>
+								<h3>{post.data.title}</h3>
+								<p class="desc">{post.data.description}</p>
+							</a>
+						</li>
+					))
+				}
+			</ul>
 		</main>
 		<Footer />
 	</body>

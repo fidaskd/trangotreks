@@ -1,0 +1,79 @@
+---
+// Layered mountain illustration used for heroes and expedition cards.
+// Pure SVG, so it scales crisply and needs no photography.
+interface Props {
+	tone?: 'dawn' | 'glacier' | 'dusk' | 'night';
+	class?: string;
+	sun?: boolean;
+}
+
+const { tone = 'dawn', class: className, sun = true } = Astro.props;
+
+const palettes = {
+	dawn: { sky: ['#f3c9a1', '#e8956a', '#3b4a5c'], far: '#9aa6b2', mid: '#5f6f7e', near: '#2a3a47', snow: '#fff6ec', sun: '#fff1d6' },
+	glacier: { sky: ['#dfeef3', '#a7c9d6', '#45708a'], far: '#b8ccd6', mid: '#6d8fa1', near: '#24404f', snow: '#ffffff', sun: '#ffffff' },
+	dusk: { sky: ['#f6b37f', '#c1576a', '#2b2440'], far: '#8f7389', mid: '#56465f', near: '#231c30', snow: '#ffe3cf', sun: '#ffd9a8' },
+	night: { sky: ['#3b5a73', '#1d3142', '#0b141b'], far: '#4b6274', mid: '#2c4152', near: '#121f29', snow: '#d9e6ee', sun: '#e9f1f6' },
+} as const;
+
+const p = palettes[tone];
+const id = `r${Math.random().toString(36).slice(2, 8)}`;
+---
+
+<svg
+	class:list={['ridge', className]}
+	viewBox="0 0 1200 700"
+	preserveAspectRatio="xMidYMax slice"
+	aria-hidden="true"
+	focusable="false"
+>
+	<defs>
+		<linearGradient id={`${id}-sky`} x1="0" y1="0" x2="0" y2="1">
+			<stop offset="0" stop-color={p.sky[2]}></stop>
+			<stop offset="0.55" stop-color={p.sky[1]}></stop>
+			<stop offset="1" stop-color={p.sky[0]}></stop>
+		</linearGradient>
+		<linearGradient id={`${id}-fade`} x1="0" y1="0" x2="0" y2="1">
+			<stop offset="0" stop-color="#000" stop-opacity="0"></stop>
+			<stop offset="1" stop-color="#000" stop-opacity="0.35"></stop>
+		</linearGradient>
+	</defs>
+
+	<rect width="1200" height="700" fill={`url(#${id}-sky)`}></rect>
+	{sun && <circle cx="860" cy="250" r="70" fill={p.sun} opacity="0.85"></circle>}
+
+	<!-- far range -->
+	<path
+		d="M0 430 L90 360 L160 395 L260 300 L330 350 L420 270 L520 340 L600 290 L700 350 L790 300 L880 360 L980 280 L1080 340 L1200 300 L1200 700 L0 700 Z"
+		fill={p.far}
+		opacity="0.9"></path>
+
+	<!-- the towers: granite spires -->
+	<path
+		d="M300 700 L300 470 L360 420 L395 300 L410 230 L425 300 L445 250 L470 140 L490 250 L510 210 L540 330 L600 380 L660 330 L700 410 L760 460 L760 700 Z"
+		fill={p.mid}></path>
+	<path d="M455 205 L470 140 L486 215 L472 200 Z" fill={p.snow} opacity="0.9"></path>
+	<path d="M400 265 L410 230 L420 270 L410 262 Z" fill={p.snow} opacity="0.85"></path>
+
+	<!-- right massif -->
+	<path
+		d="M640 700 L640 520 L760 420 L840 360 L900 300 L940 330 L1000 290 L1080 380 L1200 430 L1200 700 Z"
+		fill={p.mid}
+		opacity="0.92"></path>
+	<path d="M880 318 L900 300 L925 322 L905 316 Z" fill={p.snow} opacity="0.85"></path>
+	<path d="M985 300 L1000 290 L1020 312 L1002 306 Z" fill={p.snow} opacity="0.85"></path>
+
+	<!-- near ridge / glacier moraine -->
+	<path
+		d="M0 560 L120 500 L230 540 L340 490 L470 560 L600 520 L740 580 L880 530 L1010 575 L1120 540 L1200 560 L1200 700 L0 700 Z"
+		fill={p.near}></path>
+	<rect width="1200" height="700" fill={`url(#${id}-fade)`}></rect>
+</svg>
+
+<style>
+	.ridge {
+		display: block;
+		width: 100%;
+		height: 100%;
+	}
+</style>

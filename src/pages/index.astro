@@ -2,49 +2,601 @@
 import BaseHead from '../components/BaseHead.astro';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
-import { SITE_TITLE, SITE_DESCRIPTION } from '../consts';
+import Ridge from '../components/Ridge.astro';
+import FormattedDate from '../components/FormattedDate.astro';
+import { getCollection } from 'astro:content';
+import { CONTACT_EMAIL, EXPEDITIONS, SITE_DESCRIPTION, SITE_TITLE, SITE_TAGLINE } from '../consts';
+
+const posts = (await getCollection('blog'))
+	.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())
+	.slice(0, 3);
+
+const fmt = (n: number) => n.toLocaleString('en-US');
 ---
 
 <!doctype html>
 <html lang="en">
 	<head>
-		<BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
+		<BaseHead title={`${SITE_TITLE} — ${SITE_TAGLINE}`} description={SITE_DESCRIPTION} />
 	</head>
 	<body>
-		<Header />
+		<Header overlay />
+
 		<main>
-			<h1>🧑‍🚀 Hello, Astronaut!</h1>
-			<p>
-				Welcome to the official <a href="https://astro.build/">Astro</a> blog starter template. This
-				template serves as a lightweight, minimally-styled starting point for anyone looking to build
-				a personal website, blog, or portfolio with Astro.
-			</p>
-			<p>
-				This template comes with a few integrations already configured in your
-				<code>astro.config.mjs</code> file. You can customize your setup with
-				<a href="https://astro.build/integrations">Astro Integrations</a> to add tools like Tailwind,
-				React, or Vue to your project.
-			</p>
-			<p>Here are a few ideas on how to get started with the template:</p>
-			<ul>
-				<li>Edit this page in <code>src/pages/index.astro</code></li>
-				<li>Edit the site header items in <code>src/components/Header.astro</code></li>
-				<li>Add your name to the footer in <code>src/components/Footer.astro</code></li>
-				<li>Check out the included blog posts in <code>src/content/blog/</code></li>
-				<li>Customize the blog post page layout in <code>src/layouts/BlogPost.astro</code></li>
-			</ul>
-			<p>
-				Have fun! If you get stuck, remember to <a href="https://docs.astro.build/"
-					>read the docs
-				</a> or <a href="https://astro.build/chat">join us on Discord</a> to ask questions.
-			</p>
-			<p>
-				Looking for a blog template with a bit more personality? Check out <a
-					href="https://github.com/Charca/astro-blog-template"
-					>astro-blog-template
-				</a> by <a href="https://twitter.com/Charca">Maxi Ferreira</a>.
-			</p>
+			<!-- HERO -->
+			<section class="hero">
+				<div class="hero-art"><Ridge tone="dawn" /></div>
+				<div class="container hero-inner">
+					<p class="eyebrow light">Karakoram · Gilgit-Baltistan</p>
+					<h1>Walk among the giants of the Karakoram.</h1>
+					<p class="hero-lede">
+						Small-group treks and climbing expeditions to K2, the Baltoro Glacier and the granite
+						spires of Trango — led by mountain people who call these valleys home.
+					</p>
+					<div class="hero-actions">
+						<a href="#expeditions" class="btn btn-primary">Explore expeditions</a>
+						<a href="#plan" class="btn btn-ghost">Talk to a guide</a>
+					</div>
+				</div>
+				<a href="#facts" class="scroll-cue" aria-label="Scroll down"><span></span></a>
+			</section>
+
+			<!-- FACTS -->
+			<section id="facts" class="facts">
+				<div class="container facts-grid">
+					<div><strong>8,611<small>m</small></strong><span>K2, the world's second-highest summit</span></div>
+					<div><strong>5</strong><span>of the 14 eight-thousanders stand in Pakistan</span></div>
+					<div><strong>63<small>km</small></strong><span>the Baltoro, one of Earth's great glaciers</span></div>
+					<div><strong>Jun–Sep</strong><span>the short, bright Karakoram trekking season</span></div>
+				</div>
+			</section>
+
+			<!-- EXPEDITIONS -->
+			<section id="expeditions" class="section">
+				<div class="container">
+					<div class="section-head">
+						<div>
+							<p class="eyebrow">Signature journeys</p>
+							<h2>Expeditions for every kind of ambition</h2>
+						</div>
+						<p class="lede">
+							From the classic walk to Concordia to your first 6,000-metre summit, every itinerary
+							is paced for proper acclimatisation and built around small groups.
+						</p>
+					</div>
+
+					<div class="cards">
+						{
+							EXPEDITIONS.map((e) => (
+								<article class="card" id={e.slug}>
+									<div class="card-art">
+										<Ridge tone={e.tone} sun={false} />
+										<span class={`grade grade-${e.grade.toLowerCase()}`}>{e.grade}</span>
+									</div>
+									<div class="card-body">
+										<p class="card-region">{e.region}</p>
+										<h3>{e.name}</h3>
+										<p class="card-summary">{e.summary}</p>
+										<dl class="card-meta">
+											<div>
+												<dt>Duration</dt>
+												<dd>{e.days} days</dd>
+											</div>
+											<div>
+												<dt>Max altitude</dt>
+												<dd>{fmt(e.maxAltitude)} m</dd>
+											</div>
+											<div>
+												<dt>Season</dt>
+												<dd>{e.season}</dd>
+											</div>
+										</dl>
+										<a
+											class="card-link"
+											href={`mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent(`Enquiry: ${e.name}`)}`}
+										>
+											Enquire about dates <span aria-hidden="true">→</span>
+										</a>
+									</div>
+								</article>
+							))
+						}
+					</div>
+				</div>
+			</section>
+
+			<!-- WHY -->
+			<section class="section why">
+				<div class="container why-grid">
+					<div class="why-intro">
+						<p class="eyebrow">How we travel</p>
+						<h2>Local roots. Careful pace. Lasting respect.</h2>
+						<p class="lede">
+							High mountains reward patience. We keep groups small, build rest days into every
+							itinerary and work with porters, cooks and guides from the valleys we walk through.
+						</p>
+					</div>
+					<ol class="pillars">
+						<li>
+							<h3>Local guides & crew</h3>
+							<p>Teams from Baltistan and the Hushe valley who know every moraine, river crossing and weather sign.</p>
+						</li>
+						<li>
+							<h3>Acclimatisation first</h3>
+							<p>Gradual ascent profiles and spare days so you arrive at altitude strong — and enjoy it.</p>
+						</li>
+						<li>
+							<h3>Small groups</h3>
+							<p>Fewer people on the trail means more flexibility, better camps and a lighter footprint.</p>
+						</li>
+						<li>
+							<h3>Fair porter practice</h3>
+							<p>Proper wages, load limits, equipment and insurance for everyone who carries for us.</p>
+						</li>
+					</ol>
+				</div>
+			</section>
+
+			<!-- JOURNAL -->
+			<section class="section journal">
+				<div class="container">
+					<div class="section-head">
+						<div>
+							<p class="eyebrow">From the journal</p>
+							<h2>Stories from the trail</h2>
+						</div>
+						<a href="/blog" class="btn btn-outline">View all stories</a>
+					</div>
+					<div class="posts">
+						{
+							posts.map((post) => (
+								<a class="post" href={`/blog/${post.id}/`}>
+									{post.data.heroImage && (
+										<img src={post.data.heroImage} alt="" width={720} height={360} loading="lazy" />
+									)}
+									<p class="post-date">
+										<FormattedDate date={post.data.pubDate} />
+									</p>
+									<h3>{post.data.title}</h3>
+									<p class="post-desc">{post.data.description}</p>
+								</a>
+							))
+						}
+					</div>
+				</div>
+			</section>
+
+			<!-- CTA -->
+			<section id="plan" class="cta">
+				<div class="cta-art"><Ridge tone="night" /></div>
+				<div class="container cta-inner">
+					<p class="eyebrow light">Plan your trip</p>
+					<h2>Your Karakoram story starts with a conversation.</h2>
+					<p>
+						Tell us when you'd like to travel and what you're dreaming of. We'll reply with honest
+						advice, suggested dates and a tailored itinerary.
+					</p>
+					<a href={`mailto:${CONTACT_EMAIL}`} class="btn btn-primary">Email our team</a>
+				</div>
+			</section>
 		</main>
+
 		<Footer />
 	</body>
 </html>
+
+<style>
+	/* Hero */
+	.hero {
+		position: relative;
+		min-height: min(100svh, 900px);
+		display: flex;
+		align-items: center;
+		color: var(--paper);
+		overflow: hidden;
+		isolation: isolate;
+	}
+	.hero-art,
+	.cta-art {
+		position: absolute;
+		inset: 0;
+		z-index: -1;
+	}
+	.hero-art::after {
+		content: '';
+		position: absolute;
+		inset: 0;
+		background: linear-gradient(90deg, rgba(14, 26, 34, 0.78) 0%, rgba(14, 26, 34, 0.35) 55%, transparent 100%);
+	}
+	.hero-inner {
+		padding-top: 120px;
+		padding-bottom: 120px;
+	}
+	.hero h1 {
+		max-width: 13ch;
+		color: #fff;
+		font-weight: 500;
+	}
+	.hero-lede {
+		max-width: 34em;
+		margin-bottom: 2rem;
+		font-size: clamp(1.05rem, 1.6vw, 1.2rem);
+		color: rgba(247, 244, 238, 0.85);
+	}
+	.hero-actions {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.75rem;
+	}
+	.eyebrow.light {
+		color: #f3c9a1;
+	}
+	.scroll-cue {
+		position: absolute;
+		left: 50%;
+		bottom: 28px;
+		width: 26px;
+		height: 42px;
+		margin-left: -13px;
+		border: 1.5px solid rgba(255, 255, 255, 0.55);
+		border-radius: 20px;
+	}
+	.scroll-cue span {
+		position: absolute;
+		left: 50%;
+		top: 8px;
+		width: 3px;
+		height: 8px;
+		margin-left: -1.5px;
+		border-radius: 2px;
+		background: #fff;
+		animation: cue 1.8s ease-in-out infinite;
+	}
+	@keyframes cue {
+		0% { transform: translateY(0); opacity: 1; }
+		70% { transform: translateY(12px); opacity: 0; }
+		100% { transform: translateY(0); opacity: 0; }
+	}
+
+	/* Facts */
+	.facts {
+		background: var(--ink);
+		color: var(--mist);
+	}
+	.facts-grid {
+		display: grid;
+		grid-template-columns: repeat(4, 1fr);
+	}
+	.facts-grid > div {
+		padding: 2.25rem 1.5rem 2.25rem 0;
+		display: grid;
+		gap: 0.35rem;
+	}
+	.facts-grid > div + div {
+		padding-left: 1.5rem;
+		border-left: 1px solid rgba(255, 255, 255, 0.08);
+	}
+	.facts strong {
+		font-family: var(--font-display);
+		font-size: clamp(1.8rem, 3vw, 2.4rem);
+		font-weight: 500;
+		line-height: 1;
+		color: var(--paper);
+	}
+	.facts small {
+		margin-left: 0.15em;
+		font-size: 0.5em;
+		color: var(--accent);
+	}
+	.facts span {
+		font-size: 0.9rem;
+	}
+
+	/* Section heads */
+	.section-head {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: flex-end;
+		justify-content: space-between;
+		gap: 1.5rem 4rem;
+		margin-bottom: clamp(2.5rem, 5vw, 3.5rem);
+	}
+	.section-head h2 {
+		max-width: 16ch;
+		margin: 0;
+	}
+	.section-head .lede {
+		margin: 0;
+		max-width: 30em;
+	}
+
+	/* Expedition cards */
+	.cards {
+		display: grid;
+		grid-template-columns: repeat(2, 1fr);
+		gap: 1.75rem;
+	}
+	.card {
+		display: flex;
+		flex-direction: column;
+		background: var(--snow);
+		border-radius: var(--radius-lg);
+		overflow: hidden;
+		box-shadow: var(--shadow-sm);
+		scroll-margin-top: 100px;
+		transition:
+			transform 0.3s ease,
+			box-shadow 0.3s ease;
+	}
+	.card:hover {
+		transform: translateY(-4px);
+		box-shadow: var(--shadow-lg);
+	}
+	.card-art {
+		position: relative;
+		aspect-ratio: 16 / 8;
+		overflow: hidden;
+	}
+	.card-art :global(.ridge) {
+		transition: transform 0.6s ease;
+	}
+	.card:hover .card-art :global(.ridge) {
+		transform: scale(1.04);
+	}
+	.grade {
+		position: absolute;
+		top: 1rem;
+		left: 1rem;
+		padding: 0.35em 0.8em;
+		border-radius: 999px;
+		font-size: 0.75rem;
+		font-weight: 600;
+		letter-spacing: 0.05em;
+		background: rgba(255, 255, 255, 0.92);
+		color: var(--ink);
+	}
+	.grade::before {
+		content: '';
+		display: inline-block;
+		width: 7px;
+		height: 7px;
+		margin-right: 0.45em;
+		border-radius: 50%;
+		background: var(--glacier);
+		vertical-align: 0.05em;
+	}
+	.grade-strenuous::before {
+		background: var(--accent);
+	}
+	.grade-technical::before {
+		background: #b3261e;
+	}
+	.card-body {
+		display: flex;
+		flex-direction: column;
+		flex: 1;
+		padding: 1.75rem 1.75rem 1.5rem;
+	}
+	.card-region {
+		margin-bottom: 0.4rem;
+		font-size: 0.8rem;
+		font-weight: 600;
+		letter-spacing: 0.12em;
+		text-transform: uppercase;
+		color: var(--mist);
+	}
+	.card h3 {
+		margin-bottom: 0.6rem;
+	}
+	.card-summary {
+		color: var(--slate);
+	}
+	.card-meta {
+		display: grid;
+		grid-template-columns: repeat(3, 1fr);
+		gap: 1rem;
+		margin: auto 0 1.25rem;
+		padding-top: 1.25rem;
+		border-top: 1px solid var(--line);
+	}
+	.card-meta dt {
+		font-size: 0.72rem;
+		letter-spacing: 0.08em;
+		text-transform: uppercase;
+		color: var(--mist);
+	}
+	.card-meta dd {
+		margin: 0.15rem 0 0;
+		font-weight: 600;
+		color: var(--ink);
+	}
+	.card-link {
+		align-self: flex-start;
+		font-weight: 600;
+		text-decoration: none;
+	}
+	.card-link span {
+		display: inline-block;
+		transition: transform 0.2s ease;
+	}
+	.card-link:hover span {
+		transform: translateX(4px);
+	}
+
+	/* Why */
+	.why {
+		background: var(--snow);
+		border-block: 1px solid var(--line);
+	}
+	.why-grid {
+		display: grid;
+		grid-template-columns: 1fr 1.2fr;
+		gap: clamp(2.5rem, 6vw, 6rem);
+		align-items: start;
+	}
+	.why-intro {
+		position: sticky;
+		top: 120px;
+	}
+	.pillars {
+		list-style: none;
+		margin: 0;
+		padding: 0;
+		counter-reset: p;
+		display: grid;
+		gap: 0;
+	}
+	.pillars li {
+		counter-increment: p;
+		position: relative;
+		padding: 1.75rem 0 1.75rem 4rem;
+		border-top: 1px solid var(--line);
+	}
+	.pillars li:last-child {
+		border-bottom: 1px solid var(--line);
+	}
+	.pillars li::before {
+		content: counter(p, decimal-leading-zero);
+		position: absolute;
+		left: 0;
+		top: 1.85rem;
+		font-family: var(--font-display);
+		font-size: 1.1rem;
+		font-style: italic;
+		color: var(--accent);
+	}
+	.pillars h3 {
+		margin-bottom: 0.35rem;
+		font-size: 1.35rem;
+	}
+	.pillars p {
+		margin: 0;
+		color: var(--slate);
+	}
+
+	/* Journal */
+	.posts {
+		display: grid;
+		grid-template-columns: repeat(3, 1fr);
+		gap: 1.75rem;
+	}
+	.post {
+		display: block;
+		color: inherit;
+		text-decoration: none;
+	}
+	.post img {
+		width: 100%;
+		aspect-ratio: 3 / 2;
+		object-fit: cover;
+		margin-bottom: 1rem;
+		border-radius: var(--radius);
+		transition:
+			transform 0.3s ease,
+			box-shadow 0.3s ease;
+	}
+	.post:hover img {
+		transform: translateY(-3px);
+		box-shadow: var(--shadow-lg);
+	}
+	.post-date {
+		margin-bottom: 0.35rem;
+		font-size: 0.8rem;
+		font-weight: 600;
+		letter-spacing: 0.1em;
+		text-transform: uppercase;
+		color: var(--accent-dark);
+	}
+	.post h3 {
+		margin-bottom: 0.4rem;
+		transition: color 0.2s ease;
+	}
+	.post:hover h3 {
+		color: var(--accent-dark);
+	}
+	.post-desc {
+		color: var(--slate);
+		margin: 0;
+	}
+
+	/* CTA */
+	.cta {
+		position: relative;
+		isolation: isolate;
+		overflow: hidden;
+		color: rgba(247, 244, 238, 0.85);
+		text-align: center;
+	}
+	.cta-art::after {
+		content: '';
+		position: absolute;
+		inset: 0;
+		background: rgba(14, 26, 34, 0.45);
+	}
+	.cta-inner {
+		max-width: 760px;
+		padding-block: clamp(5rem, 11vw, 9rem);
+	}
+	.cta .eyebrow {
+		justify-content: center;
+	}
+	.cta h2 {
+		color: #fff;
+		font-weight: 500;
+	}
+	.cta p {
+		margin-inline: auto;
+		max-width: 34em;
+		margin-bottom: 2rem;
+	}
+
+	@media (max-width: 960px) {
+		.facts-grid {
+			grid-template-columns: repeat(2, 1fr);
+		}
+		.facts-grid > div:nth-child(3) {
+			padding-left: 0;
+			border-left: 0;
+		}
+		.facts-grid > div:nth-child(n + 3) {
+			border-top: 1px solid rgba(255, 255, 255, 0.08);
+		}
+		.why-grid {
+			grid-template-columns: 1fr;
+		}
+		.why-intro {
+			position: static;
+		}
+		.posts {
+			grid-template-columns: 1fr 1fr;
+		}
+	}
+	@media (max-width: 720px) {
+		.cards,
+		.posts {
+			grid-template-columns: 1fr;
+		}
+		.card-body {
+			padding: 1.4rem;
+		}
+		.hero-art::after {
+			background: linear-gradient(180deg, rgba(14, 26, 34, 0.75) 0%, rgba(14, 26, 34, 0.35) 100%);
+		}
+	}
+	@media (max-width: 420px) {
+		.facts-grid {
+			grid-template-columns: 1fr;
+		}
+		.facts-grid > div,
+		.facts-grid > div + div {
+			padding: 1.25rem 0;
+			border-left: 0;
+		}
+		.facts-grid > div + div {
+			border-top: 1px solid rgba(255, 255, 255, 0.08);
+		}
+		.card-meta {
+			grid-template-columns: 1fr 1fr;
+		}
+	}
+</style>

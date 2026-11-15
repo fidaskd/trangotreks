@@ -1,0 +1,40 @@
+---
+import { SITE_TITLE } from '../consts';
+interface Props {
+	inverse?: boolean;
+}
+const { inverse = false } = Astro.props;
+---
+
+<a href="/" class:list={['logo', { inverse }]} aria-label={`${SITE_TITLE} — home`}>
+	<svg viewBox="0 0 40 28" width="40" height="28" aria-hidden="true">
+		<path d="M1 27 11 9l4 6 5-13 7 15 3-4 9 14Z" fill="currentColor"></path>
+		<path d="m20 2 2.6 5.8-2.6-1.4-2.4 2.5Z" fill="var(--accent)"></path>
+	</svg>
+	<span class="wordmark">Trango<span>Treks</span></span>
+</a>
+
+<style>
+	.logo {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.6rem;
+		color: var(--ink);
+		text-decoration: none;
+	}
+	.logo.inverse {
+		color: var(--paper);
+	}
+	.wordmark {
+		font-family: var(--font-display);
+		font-size: 1.3rem;
+		font-weight: 600;
+		letter-spacing: -0.01em;
+	}
+	.wordmark span {
+		margin-left: 0.25em;
+		font-style: italic;
+		font-weight: 400;
+		color: var(--accent);
+	}
+</style>
